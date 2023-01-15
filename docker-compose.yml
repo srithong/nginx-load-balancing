@@ -1,0 +1,36 @@
+version: '3'
+services:
+  app1:
+    build: ./api
+    ports:
+      - "3001:3000"
+    command: sh -c "node index.js"
+    networks:
+      - load-balancing-network
+    environment:
+      - NAME=APP_1
+
+  app2:
+    build: ./api
+    ports:
+      - "3002:3000"
+    command: sh -c "node index.js"
+    networks:
+      - load-balancing-network
+    environment:
+      - NAME=APP_2
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - app1
+      - app2
+    networks:
+      - load-balancing-network
+
+networks:
+  load-balancing-network:
+    external:
+      name: load-balancing-network
